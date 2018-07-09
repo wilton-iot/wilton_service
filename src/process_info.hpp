@@ -1,5 +1,4 @@
 /*
- * Copyright 2018, alex at staticlibs.net
  * Copyright 2018, mike at myasnikov.mike@gmail.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,35 +14,37 @@
  * limitations under the License.
  */
 
-/* 
- * File:   wilton_service.h
- * Author: alex
- *
- * Created on July 8, 2018, 8:48 PM
- */
+#ifndef PROCESS_INFO_HPP
+#define PROCESS_INFO_HPP
 
-#ifndef WILTON_SERVICE_H
-#define WILTON_SERVICE_H
+#include <string>
 
-#include "wilton/wilton.h"
+#include "staticlib/pimpl.hpp"
+#include "wilton/support/exception.hpp"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+namespace wilton {
+namespace service {
 
-char* wilton_service_get_pid(
-        int* pid_out);
-char* wilton_service_get_process_memory_size_bytes(
-        int* memory_out);
+class process_info : public sl::pimpl::object {
+protected:
+    /**
+     * implementation class
+     */
+    class impl;
+public:
+    /**
+     * PIMPL-specific constructor
+     * 
+     * @param pimpl impl object
+     */
+    PIMPL_CONSTRUCTOR(process_info)
 
-char* wilton_service_get_threads_count(
-		int* count_out);
-char* wilton_service_increase_threads_count();
-char* wilton_service_decrease_threads_count();
+    static int64_t service_get_pid();
+    static int64_t service_get_process_memory_size_bytes();
+};
 
-#ifdef __cplusplus
+
+} // namespace
 }
-#endif
 
-#endif /* WILTON_SERVICE_H */
-
+#endif /* PROCESS_INFO_HPP */
