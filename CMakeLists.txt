@@ -40,6 +40,7 @@ if ( STATICLIB_TOOLCHAIN MATCHES "windows_.+" )
 endif ( )
 
 add_library ( ${PROJECT_NAME} SHARED
+        ${CMAKE_CURRENT_LIST_DIR}/src/trace_info.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/process_info.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/threads_counter.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/wilton_service.cpp

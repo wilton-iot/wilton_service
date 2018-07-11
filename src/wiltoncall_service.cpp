@@ -60,6 +60,21 @@ support::buffer service_decrease_threads_count(sl::io::span<const char> ) {
     wilton_service_decrease_threads_count();
     return support::make_null_buffer();
 }
+support::buffer service_get_call_stack(sl::io::span<const char> ) {
+    char* out = nullptr;
+    int out_len = 0;
+    wilton_service_get_call_stack(std::addressof(out), std::addressof(out_len));
+    return support::make_string_buffer(std::string(out, out_len));
+}
+support::buffer service_get_all_calls(sl::io::span<const char> ) {
+    char* out = nullptr;
+    int out_len = 0;
+    char* error = wilton_service_get_all_calls(std::addressof(out), std::addressof(out_len));
+    if (error) {
+        return support::make_string_buffer(std::string(error));
+    }
+    return support::make_string_buffer(std::string(out, out_len));
+}
 
 } // namespace
 }
@@ -71,6 +86,8 @@ extern "C" char* wilton_module_init() {
         wilton::support::register_wiltoncall("service_get_threads_count", wilton::service::service_get_threads_count);
         wilton::support::register_wiltoncall("service_increase_threads_count", wilton::service::service_increase_threads_count);
         wilton::support::register_wiltoncall("service_decrease_threads_count", wilton::service::service_decrease_threads_count);
+        wilton::support::register_wiltoncall("service_get_call_stack", wilton::service::service_get_call_stack);
+        wilton::support::register_wiltoncall("service_get_all_calls", wilton::service::service_get_all_calls);
         return nullptr;
     } catch (const std::exception& e) {
         return wilton::support::alloc_copy(TRACEMSG(e.what() + "\nException raised"));

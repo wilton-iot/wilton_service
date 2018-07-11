@@ -28,6 +28,7 @@
 #include "wilton/support/alloc.hpp"
 #include "threads_counter.hpp"
 #include "process_info.hpp"
+#include "trace_info.hpp"
 
 // process info
 char* wilton_service_get_pid(int* pid_out) /* noexcept */ {
@@ -76,3 +77,55 @@ char* wilton_service_decrease_threads_count() /* noexcept */ {
     }
 }
 
+
+char *wilton_service_start_call(const char *call, int call_len, int* id) /* noexcept */ {
+    if (nullptr == call) return wilton::support::alloc_copy(TRACEMSG("Null 'call' parameter specified"));
+    if (!sl::support::is_int32(call_len)) return wilton::support::alloc_copy(TRACEMSG(
+            "Invalid 'call_len' parameter specified: [" + sl::support::to_string(call_len) + "]"));
+    if (nullptr == id) return wilton::support::alloc_copy(TRACEMSG("Null 'id' parameter specified"));
+    try {
+        uint32_t call_len_u32 = static_cast<uint32_t> (call_len);
+        std::string call_str{call, call_len_u32};
+        *id = wilton::service::trace_info::service_start_call(call_str);
+        return nullptr;
+    } catch (const std::exception& e) {
+        return wilton::support::alloc_copy(TRACEMSG(e.what() + "\nException raised"));
+    }
+}
+
+char *wilton_service_stop_call(const char *result, int result_len, int id) /* noexcept */ {
+    try {
+        uint32_t result_len_u32 = static_cast<uint32_t> (result_len);
+        std::string result_str{result, result_len_u32};
+        wilton::service::trace_info::service_finish_call(result_str, id);
+        return nullptr;
+    } catch (const std::exception& e) {
+        return wilton::support::alloc_copy(TRACEMSG(e.what() + "\nException raised"));
+    }
+}
+
+char *wilton_service_get_call_stack(char **out_stack, int *out_stack_len) /* noexcept */ {
+    if (nullptr == out_stack) return wilton::support::alloc_copy(TRACEMSG("Null 'out_stack' parameter specified"));
+    if (nullptr == out_stack_len) return wilton::support::alloc_copy(TRACEMSG("Null 'out_stack_len' parameter specified"));
+    try {
+        std::string out = wilton::service::trace_info::service_get_call_stack();
+        *out_stack = wilton::support::alloc_copy(out);
+        *out_stack_len = static_cast<int>(out.length());
+        return nullptr;
+    } catch (const std::exception& e) {
+        return wilton::support::alloc_copy(TRACEMSG(e.what() + "\nException raised"));
+    }
+}
+
+char *wilton_service_get_all_calls(char **out_stack, int *out_stack_len) /* noexcept */ {
+    if (nullptr == out_stack) return wilton::support::alloc_copy(TRACEMSG("Null 'out_stack' parameter specified"));
+    if (nullptr == out_stack_len) return wilton::support::alloc_copy(TRACEMSG("Null 'out_stack_len' parameter specified"));
+    try {
+        std::string out = wilton::service::trace_info::service_get_all_calls();
+        *out_stack = wilton::support::alloc_copy(out);
+        *out_stack_len = static_cast<int>(out.length());
+        return nullptr;
+    } catch (const std::exception& e) {
+        return wilton::support::alloc_copy(TRACEMSG(e.what() + "\nException raised"));
+    }
+}
