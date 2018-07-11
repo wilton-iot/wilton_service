@@ -173,40 +173,64 @@ private:
     static trace_node_ptr node;
     // node pointers are valid until tree will be deleted
     static std::map<id_type, trace_node_ptr> indexed_nodes;
+    static bool trace_info_gather_enabled;
 public:
     static id_type service_start_call(std::string call){
-        call_stack.push_back(call);
-        id_type id = node->add_child(call);
-        node = node->get_last_child();
-        indexed_nodes[id] = node;
+        id_type id = 0;
+        if (trace_info_gather_enabled) {
+            call_stack.push_back(call);
+            id = node->add_child(call);
+            node = node->get_last_child();
+            indexed_nodes[id] = node;
+        }
         return id;
     }
     static void service_finish_call(std::string result, int id){
-        call_stack.pop_back();
-        node = node->get_parent();
-        indexed_nodes[id]->set_result(result);
+        if (trace_info_gather_enabled) {
+            call_stack.pop_back();
+            node = node->get_parent();
+            indexed_nodes[id]->set_result(result);
+        }
     }
     static std::string service_get_call_stack(){
-        std::string res{};
-        res = prepare_formatted_call_stack();
-        return res;
+        if (trace_info_gather_enabled) {
+            return prepare_formatted_call_stack();
+        }
+        return std::string{};
     }
     static std::string service_get_all_calls(){
-        return tree.get_tree_view();
+        if (trace_info_gather_enabled) {
+            return tree.get_tree_view();
+        }
+        return std::string{};
+    }
+    static bool is_trace_info_gather_enabled(){
+        return  trace_info_gather_enabled;
+    }
+    static void enable_trace_info_gather(){
+        trace_info_gather_enabled = true;
+    }
+    static void disable_trace_info_gather(){
+        trace_info_gather_enabled = false;
     }
 };
 
+// init static members
 id_type trace_node::uniq_id{0};
 
-std::list<call_string> trace_info::impl::call_stack{};
 trace_node trace_info::impl::tree{"{\"tree_root\": \"root\"}"};
 trace_node_ptr trace_info::impl::node = &trace_info::impl::tree;
+std::list<call_string> trace_info::impl::call_stack{};
 std::map<id_type, trace_node_ptr> trace_info::impl::indexed_nodes;
+bool trace_info::impl::trace_info_gather_enabled{false};
 
 PIMPL_FORWARD_METHOD_STATIC(trace_info, id_type, service_start_call, (std::string), (), support::exception)
 PIMPL_FORWARD_METHOD_STATIC(trace_info, void, service_finish_call, (std::string)(id_type), (), support::exception)
 PIMPL_FORWARD_METHOD_STATIC(trace_info, std::string, service_get_call_stack, (), (), support::exception)
 PIMPL_FORWARD_METHOD_STATIC(trace_info, std::string, service_get_all_calls, (), (), support::exception)
+PIMPL_FORWARD_METHOD_STATIC(trace_info, bool, is_trace_info_gather_enabled, (), (), support::exception)
+PIMPL_FORWARD_METHOD_STATIC(trace_info, void, enable_trace_info_gather, (), (), support::exception)
+PIMPL_FORWARD_METHOD_STATIC(trace_info, void, disable_trace_info_gather, (), (), support::exception)
 
 } // namespace
 }

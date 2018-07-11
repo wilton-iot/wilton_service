@@ -43,8 +43,9 @@ public:
     static void service_finish_call(std::string result, int32_t id);
     static std::string service_get_call_stack();
     static std::string service_get_all_calls();
-    // static void service_set_call();
-    // static int64_t service_get_process_memory_size_bytes();
+    static bool is_trace_info_gather_enabled();
+    static void enable_trace_info_gather();
+    static void disable_trace_info_gather();
 };
 
 

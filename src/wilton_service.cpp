@@ -129,3 +129,29 @@ char *wilton_service_get_all_calls(char **out_stack, int *out_stack_len) /* noex
         return wilton::support::alloc_copy(TRACEMSG(e.what() + "\nException raised"));
     }
 }
+
+char* wilton_service_is_trace_info_gather_enabled(bool* is_enabled) /* noexcept */ {
+    if (nullptr == is_enabled) return wilton::support::alloc_copy(TRACEMSG("Null 'is_enabled' parameter specified"));
+    try {
+        *is_enabled = wilton::service::trace_info::is_trace_info_gather_enabled();
+        return nullptr;
+    } catch (const std::exception& e) {
+        return wilton::support::alloc_copy(TRACEMSG(e.what() + "\nException raised"));
+    }
+}
+char* wilton_service_enable_trace_info_gather() /* noexcept */ {
+    try {
+        wilton::service::trace_info::enable_trace_info_gather();
+        return nullptr;
+    } catch (const std::exception& e) {
+        return wilton::support::alloc_copy(TRACEMSG(e.what() + "\nException raised"));
+    }
+}
+char* wilton_service_disable_trace_info_gather() /* noexcept */ {
+    try {
+        wilton::service::trace_info::disable_trace_info_gather();
+        return nullptr;
+    } catch (const std::exception& e) {
+        return wilton::support::alloc_copy(TRACEMSG(e.what() + "\nException raised"));
+    }
+}

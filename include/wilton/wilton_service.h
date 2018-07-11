@@ -56,6 +56,11 @@ char* wilton_service_get_all_calls(
         char **out_stack,
         int* out_stack_len);
 
+char* wilton_service_is_trace_info_gather_enabled(
+		bool* is_enabled);
+char* wilton_service_enable_trace_info_gather();
+char* wilton_service_disable_trace_info_gather();
+
 #ifdef __cplusplus
 }
 #endif
