@@ -189,7 +189,9 @@ public:
         if (trace_info_gather_enabled && call_stack.size()) {
             call_stack.pop_back();
             node = node->get_parent();
-            indexed_nodes[id]->set_result(result);
+            if (indexed_nodes.count(id)){
+                indexed_nodes[id]->set_result(result);
+            }
         }
     }
     static std::string service_get_call_stack(){
