@@ -173,7 +173,7 @@ private:
     static trace_node_ptr node;
     // node pointers are valid until tree will be deleted
     static std::map<id_type, trace_node_ptr> indexed_nodes;
-    static bool trace_info_gather_enabled;
+    static std::atomic_bool trace_info_gather_enabled;
 public:
     static id_type service_start_call(std::string call){
         id_type id = 0;
@@ -210,10 +210,10 @@ public:
         return  trace_info_gather_enabled;
     }
     static void enable_trace_info_gather(){
-        trace_info_gather_enabled = true;
+        trace_info_gather_enabled.exchange(true, std::memory_order_acq_rel);
     }
     static void disable_trace_info_gather(){
-        trace_info_gather_enabled = false;
+        trace_info_gather_enabled.exchange(false, std::memory_order_acq_rel);;
     }
 };
 
@@ -224,7 +224,7 @@ trace_node trace_info::impl::tree{"{\"tree_root\": \"root\"}"};
 trace_node_ptr trace_info::impl::node = &trace_info::impl::tree;
 std::list<call_string> trace_info::impl::call_stack{};
 std::map<id_type, trace_node_ptr> trace_info::impl::indexed_nodes;
-bool trace_info::impl::trace_info_gather_enabled{false};
+std::atomic_bool trace_info::impl::trace_info_gather_enabled{false};
 
 PIMPL_FORWARD_METHOD_STATIC(trace_info, id_type, service_start_call, (std::string), (), support::exception)
 PIMPL_FORWARD_METHOD_STATIC(trace_info, void, service_finish_call, (std::string)(id_type), (), support::exception)
