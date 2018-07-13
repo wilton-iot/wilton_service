@@ -106,7 +106,7 @@ class trace_node :public std::enable_shared_from_this<trace_node>
     trace_node_ptr parent;
 
     // id allows index nodes and determine to which belongs recieved result data(result option)
-    static id_type uniq_id;
+    static std::atomic_int uniq_id;
     id_type id;
 
     std::string get_formatted_string(std::string tab, trace_node_ptr node) {
@@ -128,8 +128,12 @@ class trace_node :public std::enable_shared_from_this<trace_node>
     }
 
 public:
-    trace_node(std::string call, trace_node_ptr parent) : call(call), parent(parent), id(uniq_id++) {}
-    trace_node(std::string call) : call(call), parent(nullptr), id(uniq_id++) {}
+    trace_node(std::string call, trace_node_ptr parent) : call(call), parent(parent) {
+        id = uniq_id.fetch_add(1, std::memory_order_acq_rel);
+    }
+    trace_node(std::string call) : call(call), parent(nullptr) {
+        id = uniq_id.fetch_add(1, std::memory_order_acq_rel);
+    }
     id_type add_child(std::string call) {
         auto child = std::make_shared<trace_node>(call, this);
         childs.push_back(child);
@@ -218,7 +222,7 @@ public:
 };
 
 // init static members
-id_type trace_node::uniq_id{0};
+std::atomic_int trace_node::uniq_id{0};
 
 trace_node trace_info::impl::tree{"{\"tree_root\": \"root\"}"};
 trace_node_ptr trace_info::impl::node = &trace_info::impl::tree;
