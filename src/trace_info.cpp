@@ -146,7 +146,7 @@ public:
     }
     std::string get_tree_view(){
         std::string res{};
-        res = get_formatted_string("  ", childs.front().get());
+        res = get_formatted_string("  ", this);
         return res;
     }
     void set_result(std::string res){
@@ -186,7 +186,7 @@ public:
         return id;
     }
     static void service_finish_call(std::string result, int id){
-        if (trace_info_gather_enabled) {
+        if (trace_info_gather_enabled && call_stack.size()) {
             call_stack.pop_back();
             node = node->get_parent();
             indexed_nodes[id]->set_result(result);
