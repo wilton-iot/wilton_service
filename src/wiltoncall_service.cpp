@@ -97,6 +97,22 @@ support::buffer service_disable_trace_info_gather(sl::io::span<const char> ) {
 
 extern "C" char* wilton_module_init() {
     try {
+        // load config to chec is trace enabled
+        char* config = nullptr;
+        int config_len = 0;
+        auto err_conf = wilton_config(std::addressof(config), std::addressof(config_len));
+        if (nullptr != err_conf) wilton::support::throw_wilton_error(err_conf, TRACEMSG(err_conf));
+        auto deferred = sl::support::defer([config] () STATICLIB_NOEXCEPT {
+            wilton_free(config);
+        }); // execute lambda on destruction
+
+        // enable trace info gathering if flag enabled
+        auto cf = sl::json::load({const_cast<const char*> (config), config_len});
+        if (cf["traceEnabled"].as_int32()) {
+            wilton_service_enable_trace_info_gather();
+        }
+
+        // register functions
         wilton::support::register_wiltoncall("service_get_pid", wilton::service::service_get_pid);
         wilton::support::register_wiltoncall("service_get_process_memory_size_bytes", wilton::service::service_get_process_memory_size_bytes);
         wilton::support::register_wiltoncall("service_get_threads_count", wilton::service::service_get_threads_count);
