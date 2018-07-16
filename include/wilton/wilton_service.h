@@ -37,7 +37,7 @@ char* wilton_service_get_process_memory_size_bytes(
         int* memory_out);
 
 char* wilton_service_get_threads_count(
-		int* count_out);
+        int* count_out);
 char* wilton_service_increase_threads_count();
 char* wilton_service_decrease_threads_count();
 
@@ -57,7 +57,7 @@ char* wilton_service_get_all_calls(
         int* out_stack_len);
 
 char* wilton_service_is_trace_info_gather_enabled(
-		bool* is_enabled);
+        bool* is_enabled);
 char* wilton_service_enable_trace_info_gather();
 char* wilton_service_disable_trace_info_gather();
 

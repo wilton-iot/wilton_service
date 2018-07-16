@@ -35,26 +35,27 @@ namespace service {
 class process_info::impl : public staticlib::pimpl::object::impl {
 private:
 public:
-	static int64_t service_get_pid() {
-        int64_t pid; // beacause getpid is int32_t, but GetCurrentProcessId returns DWORD which uint32_t
+    static int64_t service_get_pid() {
+        int64_t pid = 0; // beacause getpid is int32_t, but GetCurrentProcessId returns DWORD which uint32_t
 #ifdef STATICLIB_WINDOWS
         pid = GetCurrentProcessId();
 #elif defined(STATICLIB_ANDROID) || defined (STATICLIB_LINUX) || defined (STATICLIB_MAC) 
         pid = ::getpid();
 #endif
         return pid;
-	}
+    }
     static int64_t service_get_process_memory_size_bytes() {
 #ifdef STATICLIB_WINDOWS
         PROCESS_MEMORY_COUNTERS pmc;
         // THere may be different PSAPI_VERSION, but it always use GetProcessMemoryInfo function name
-        GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
+        GetProcessMemoryInfo(GetCurrentProcess(), std::addressof(pmc), sizeof(pmc));
         // https://docs.microsoft.com/en-us/windows/desktop/api/psapi/ns-psapi-_process_memory_counters
         // PagefileUsage - The Commit Charge value in bytes for this process. 
         //                 Commit Charge is the total amount of memory that the memory manager has committed for a running process.
         return pmc.PagefileUsage;
-#endif
+#else // !STATICLIB_WINDOWS
         return -1;
+#endif
     }
 };
 

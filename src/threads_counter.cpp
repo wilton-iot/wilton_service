@@ -29,9 +29,9 @@ private:
     static std::atomic_int threads_count;
    
 public:
-	static void increase_threads_count() {
+    static void increase_threads_count() {
         threads_count.fetch_add(1, std::memory_order_acq_rel);
-	}
+    }
     static void decrease_threads_count() {
         threads_count.fetch_sub(1, std::memory_order_acq_rel);
     }

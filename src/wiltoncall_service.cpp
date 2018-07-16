@@ -40,16 +40,16 @@ namespace service {
 support::buffer service_get_pid(sl::io::span<const char> ) {
     int pid = 0;
     wilton_service_get_pid(&pid);
-	return support::make_string_buffer(sl::support::to_string(pid));
+    return support::make_string_buffer(sl::support::to_string(pid));
 }
 support::buffer service_get_process_memory_size_bytes(sl::io::span<const char> ) {
     int memory = 0;
     wilton_service_get_process_memory_size_bytes(&memory);
-	return support::make_string_buffer(sl::support::to_string(memory));
+    return support::make_string_buffer(sl::support::to_string(memory));
 }
 
 support::buffer service_get_threads_count(sl::io::span<const char> ) {
-	int count = 0;
+    int count = 0;
     wilton_service_get_threads_count(&count);
     return support::make_string_buffer(sl::support::to_string(count));
 }
