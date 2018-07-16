@@ -34,7 +34,7 @@
 char* wilton_service_get_pid(int* pid_out) /* noexcept */ {
     if (nullptr == pid_out) return wilton::support::alloc_copy(TRACEMSG("Null 'pid_out' parameter specified"));
     try {
-        *pid_out = wilton::service::process_info::service_get_pid();
+        *pid_out = static_cast<int>(wilton::service::process_info::service_get_pid());
         return nullptr;
     } catch (const std::exception& e) {
         return wilton::support::alloc_copy(TRACEMSG(e.what() + "\nException raised"));
@@ -43,7 +43,7 @@ char* wilton_service_get_pid(int* pid_out) /* noexcept */ {
 char* wilton_service_get_process_memory_size_bytes(int* memory_out) /* noexcept */ {
     if (nullptr == memory_out) return wilton::support::alloc_copy(TRACEMSG("Null 'memory_out' parameter specified"));
     try {
-        *memory_out = wilton::service::process_info::service_get_process_memory_size_bytes();
+        *memory_out = static_cast<int>(wilton::service::process_info::service_get_process_memory_size_bytes());
         return nullptr;
     } catch (const std::exception& e) {
         return wilton::support::alloc_copy(TRACEMSG(e.what() + "\nException raised"));

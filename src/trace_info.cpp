@@ -139,9 +139,6 @@ public:
         childs.push_back(child);
         return child->get_id();
     }
-    int get_childs_count() {
-        return childs.size();
-    }
     trace_node_ptr get_last_child(){
         return childs.back().get();
     }
