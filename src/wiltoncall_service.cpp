@@ -1,5 +1,6 @@
 /*
  * Copyright 2018, alex at staticlibs.net
+ * Copyright 2018, mike at myasnikov.mike@gmail.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,14 +34,96 @@
 #include "wilton/support/registrar.hpp"
 
 namespace wilton {
-namespace mustache {
+namespace service {
+
+
+support::buffer service_get_pid(sl::io::span<const char> ) {
+    int pid = 0;
+    wilton_service_get_pid(&pid);
+	return support::make_string_buffer(sl::support::to_string(pid));
+}
+support::buffer service_get_process_memory_size_bytes(sl::io::span<const char> ) {
+    int memory = 0;
+    wilton_service_get_process_memory_size_bytes(&memory);
+	return support::make_string_buffer(sl::support::to_string(memory));
+}
+
+support::buffer service_get_threads_count(sl::io::span<const char> ) {
+	int count = 0;
+    wilton_service_get_threads_count(&count);
+    return support::make_string_buffer(sl::support::to_string(count));
+}
+support::buffer service_increase_threads_count(sl::io::span<const char> ) {
+    wilton_service_increase_threads_count();
+    return support::make_null_buffer();
+}
+support::buffer service_decrease_threads_count(sl::io::span<const char> ) {
+    wilton_service_decrease_threads_count();
+    return support::make_null_buffer();
+}
+
+support::buffer service_get_call_stack(sl::io::span<const char> ) {
+    char* out = nullptr;
+    int out_len = 0;
+    wilton_service_get_call_stack(std::addressof(out), std::addressof(out_len));
+    return support::make_string_buffer(std::string(out, out_len));
+}
+support::buffer service_get_all_calls(sl::io::span<const char> ) {
+    char* out = nullptr;
+    int out_len = 0;
+    char* error = wilton_service_get_all_calls(std::addressof(out), std::addressof(out_len));
+    if (error) {
+        return support::make_string_buffer(std::string(error));
+    }
+    return support::make_string_buffer(std::string(out, out_len));
+}
+
+support::buffer service_is_trace_info_gather_enabled(sl::io::span<const char> ) {
+    bool is_enabled = false;
+    wilton_service_is_trace_info_gather_enabled(&is_enabled);
+    return support::make_string_buffer(sl::support::to_string(is_enabled));
+}
+support::buffer service_enable_trace_info_gather(sl::io::span<const char> ) {
+    wilton_service_enable_trace_info_gather();
+    return support::make_null_buffer();
+}
+support::buffer service_disable_trace_info_gather(sl::io::span<const char> ) {
+    wilton_service_disable_trace_info_gather();
+    return support::make_null_buffer();
+}
 
 } // namespace
 }
 
 extern "C" char* wilton_module_init() {
     try {
-        // todo
+        // load config to chec is trace enabled
+        char* config = nullptr;
+        int config_len = 0;
+        auto err_conf = wilton_config(std::addressof(config), std::addressof(config_len));
+        if (nullptr != err_conf) wilton::support::throw_wilton_error(err_conf, TRACEMSG(err_conf));
+        auto deferred = sl::support::defer([config] () STATICLIB_NOEXCEPT {
+            wilton_free(config);
+        }); // execute lambda on destruction
+
+        // enable trace info gathering if flag enabled
+        auto cf = sl::json::load({const_cast<const char*> (config), config_len});
+        if (cf["traceEnabled"].as_int32()) {
+            wilton_service_enable_trace_info_gather();
+        }
+
+        // register functions
+        wilton::support::register_wiltoncall("service_get_pid", wilton::service::service_get_pid);
+        wilton::support::register_wiltoncall("service_get_process_memory_size_bytes", wilton::service::service_get_process_memory_size_bytes);
+        wilton::support::register_wiltoncall("service_get_threads_count", wilton::service::service_get_threads_count);
+        wilton::support::register_wiltoncall("service_increase_threads_count", wilton::service::service_increase_threads_count);
+        wilton::support::register_wiltoncall("service_decrease_threads_count", wilton::service::service_decrease_threads_count);
+        wilton::support::register_wiltoncall("service_get_call_stack", wilton::service::service_get_call_stack);
+        wilton::support::register_wiltoncall("service_get_all_calls", wilton::service::service_get_all_calls);
+        wilton::support::register_wiltoncall("service_enable_trace_info_gather", wilton::service::service_enable_trace_info_gather);
+        wilton::support::register_wiltoncall("service_disable_trace_info_gather", wilton::service::service_disable_trace_info_gather);
+        wilton::support::register_wiltoncall("service_is_trace_info_gather_enabled", wilton::service::service_is_trace_info_gather_enabled);
+
         return nullptr;
     } catch (const std::exception& e) {
         return wilton::support::alloc_copy(TRACEMSG(e.what() + "\nException raised"));

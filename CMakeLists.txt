@@ -22,6 +22,7 @@ set ( ${PROJECT_NAME}_DEPS
         staticlib_support
         staticlib_io
         staticlib_ranges
+        staticlib_pimpl
         staticlib_utils
         staticlib_json )
 staticlib_pkg_check_modules ( ${PROJECT_NAME}_DEPS_PC REQUIRED ${PROJECT_NAME}_DEPS )
@@ -39,6 +40,9 @@ if ( STATICLIB_TOOLCHAIN MATCHES "windows_.+" )
 endif ( )
 
 add_library ( ${PROJECT_NAME} SHARED
+        ${CMAKE_CURRENT_LIST_DIR}/src/trace_info.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/process_info.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/threads_counter.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/wilton_service.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/wiltoncall_service.cpp
         ${${PROJECT_NAME}_RESFILE}
