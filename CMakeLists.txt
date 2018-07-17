@@ -37,6 +37,7 @@ if ( STATICLIB_TOOLCHAIN MATCHES "windows_.+" )
             ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.rc )
     set ( ${PROJECT_NAME}_RESFILE ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.rc )
     set ( ${PROJECT_NAME}_DEFFILE ${CMAKE_CURRENT_LIST_DIR}/resources/${PROJECT_NAME}.def )
+    list ( APPEND ${PROJECT_NAME}_DEFINITIONS -DPSAPI_VERSION=1 )
 endif ( )
 
 add_library ( ${PROJECT_NAME} SHARED
@@ -68,7 +69,7 @@ target_compile_definitions( ${PROJECT_NAME} PRIVATE ${${PROJECT_NAME}_DEFINITION
 if ( STATICLIB_TOOLCHAIN MATCHES "android_.+" )
     set_property ( TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS "-Wl,-soname,lib${PROJECT_NAME}.so" )
 elseif ( STATICLIB_TOOLCHAIN MATCHES "windows_.+" )
-    target_link_libraries ( ${PROJECT_NAME} PRIVATE wtsapi32 )
+    target_link_libraries ( ${PROJECT_NAME} PRIVATE psapi wtsapi32 )
     set_property ( TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS "/manifest:no" )
 endif ( )
 
