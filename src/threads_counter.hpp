@@ -1,5 +1,6 @@
 /*
  * Copyright 2018, mike at myasnikov.mike@gmail.com
+ * Copyright 2018, alex at staticlibs.net
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +15,8 @@
  * limitations under the License.
  */
 
-#ifndef THREADS_COUNTER_HPP
-#define THREADS_COUNTER_HPP
+#ifndef WILTON_SERVICE_THREADS_COUNTER_HPP
+#define WILTON_SERVICE_THREADS_COUNTER_HPP
 
 #include <string>
 
@@ -31,6 +32,7 @@ protected:
      * implementation class
      */
     class impl;
+
 public:
     /**
      * PIMPL-specific constructor
@@ -40,8 +42,10 @@ public:
     PIMPL_CONSTRUCTOR(threads_counter)
 
     static void increase_threads_count();
+
     static void decrease_threads_count();
-    static int get_threads_count();
+
+    static uint32_t get_threads_count();
 };
 
 

@@ -1,5 +1,6 @@
 /*
  * Copyright 2018, mike at myasnikov.mike@gmail.com
+ * Copyright 2018, alex at staticlibs.net
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +15,8 @@
  * limitations under the License.
  */
 
-#ifndef PROCESS_INFO_HPP
-#define PROCESS_INFO_HPP
+#ifndef WILTON_SERVICE_PROCESS_INFO_HPP
+#define WILTON_SERVICE_PROCESS_INFO_HPP
 
 #include <string>
 
@@ -31,6 +32,7 @@ protected:
      * implementation class
      */
     class impl;
+
 public:
     /**
      * PIMPL-specific constructor
@@ -40,6 +42,7 @@ public:
     PIMPL_CONSTRUCTOR(process_info)
 
     static int64_t service_get_pid();
+
     static int64_t service_get_process_memory_size_bytes();
 };
 
@@ -47,4 +50,4 @@ public:
 } // namespace
 }
 
-#endif /* PROCESS_INFO_HPP */
+#endif /* WILTON_SERVICE_PROCESS_INFO_HPP */

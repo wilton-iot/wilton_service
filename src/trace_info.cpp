@@ -80,7 +80,7 @@ std::string parse_json(std::string json){
         if ("args" == el.name()) {
             line += "(";
             for (auto& arg : el.as_array()) {
-                line += get_json_value_as_string(&arg) + ", ";
+                line += get_json_value_as_string(std::addressof(arg)) + ", ";
             }
             if (el.as_array().size()) { // remove 2 last ', ' symbols
                 line.pop_back();
@@ -222,7 +222,7 @@ public:
 std::atomic_int trace_node::uniq_id{0};
 
 trace_node trace_info::impl::tree{"{\"tree_root\": \"root\"}"};
-trace_node_ptr trace_info::impl::node = &trace_info::impl::tree;
+trace_node_ptr trace_info::impl::node = std::addressof(trace_info::impl::tree);
 std::list<call_string> trace_info::impl::call_stack{};
 std::map<id_type, trace_node_ptr> trace_info::impl::indexed_nodes;
 std::atomic_bool trace_info::impl::trace_info_gather_enabled{false};

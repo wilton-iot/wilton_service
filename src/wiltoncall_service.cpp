@@ -22,7 +22,6 @@
  * Created on July 8, 2018, 8:49 PM
  */
 
-
 #include "staticlib/support.hpp"
 #include "staticlib/json.hpp"
 #include "staticlib/utils.hpp"
@@ -36,39 +35,47 @@
 namespace wilton {
 namespace service {
 
-
-support::buffer service_get_pid(sl::io::span<const char> ) {
+support::buffer service_get_pid(sl::io::span<const char>) {
     int pid = 0;
-    wilton_service_get_pid(&pid);
+    char* err = wilton_service_get_pid(std::addressof(pid));
+    if (nullptr != err) support::throw_wilton_error(err, TRACEMSG(err));
     return support::make_string_buffer(sl::support::to_string(pid));
 }
-support::buffer service_get_process_memory_size_bytes(sl::io::span<const char> ) {
+
+support::buffer service_get_process_memory_size_bytes(sl::io::span<const char>) {
     int memory = 0;
-    wilton_service_get_process_memory_size_bytes(&memory);
+    char* err = wilton_service_get_process_memory_size_bytes(std::addressof(memory));
+    if (nullptr != err) support::throw_wilton_error(err, TRACEMSG(err));
     return support::make_string_buffer(sl::support::to_string(memory));
 }
 
-support::buffer service_get_threads_count(sl::io::span<const char> ) {
+support::buffer service_get_threads_count(sl::io::span<const char>) {
     int count = 0;
-    wilton_service_get_threads_count(&count);
+    char* err = wilton_service_get_threads_count(std::addressof(count));
+    if (nullptr != err) support::throw_wilton_error(err, TRACEMSG(err));
     return support::make_string_buffer(sl::support::to_string(count));
 }
-support::buffer service_increase_threads_count(sl::io::span<const char> ) {
-    wilton_service_increase_threads_count();
+
+support::buffer service_increase_threads_count(sl::io::span<const char>) {
+    char* err = wilton_service_increase_threads_count();
+    if (nullptr != err) support::throw_wilton_error(err, TRACEMSG(err));
     return support::make_null_buffer();
 }
-support::buffer service_decrease_threads_count(sl::io::span<const char> ) {
+
+support::buffer service_decrease_threads_count(sl::io::span<const char>) {
     wilton_service_decrease_threads_count();
     return support::make_null_buffer();
 }
 
-support::buffer service_get_call_stack(sl::io::span<const char> ) {
+support::buffer service_get_call_stack(sl::io::span<const char>) {
     char* out = nullptr;
     int out_len = 0;
-    wilton_service_get_call_stack(std::addressof(out), std::addressof(out_len));
+    char* err = wilton_service_get_call_stack(std::addressof(out), std::addressof(out_len));
+    if (nullptr != err) support::throw_wilton_error(err, TRACEMSG(err));
     return support::make_string_buffer(std::string(out, out_len));
 }
-support::buffer service_get_all_calls(sl::io::span<const char> ) {
+
+support::buffer service_get_all_calls(sl::io::span<const char>) {
     char* out = nullptr;
     int out_len = 0;
     char* error = wilton_service_get_all_calls(std::addressof(out), std::addressof(out_len));
@@ -78,17 +85,22 @@ support::buffer service_get_all_calls(sl::io::span<const char> ) {
     return support::make_string_buffer(std::string(out, out_len));
 }
 
-support::buffer service_is_trace_info_gather_enabled(sl::io::span<const char> ) {
-    bool is_enabled = false;
-    wilton_service_is_trace_info_gather_enabled(&is_enabled);
+support::buffer service_is_trace_info_gather_enabled(sl::io::span<const char>) {
+    int is_enabled = 0;
+    char* err = wilton_service_is_trace_info_gather_enabled(std::addressof(is_enabled));
+    if (nullptr != err) support::throw_wilton_error(err, TRACEMSG(err));
     return support::make_string_buffer(sl::support::to_string(is_enabled));
 }
-support::buffer service_enable_trace_info_gather(sl::io::span<const char> ) {
-    wilton_service_enable_trace_info_gather();
+
+support::buffer service_enable_trace_info_gather(sl::io::span<const char>) {
+    char* err = wilton_service_enable_trace_info_gather();
+    if (nullptr != err) support::throw_wilton_error(err, TRACEMSG(err));
     return support::make_null_buffer();
 }
-support::buffer service_disable_trace_info_gather(sl::io::span<const char> ) {
-    wilton_service_disable_trace_info_gather();
+
+support::buffer service_disable_trace_info_gather(sl::io::span<const char>) {
+    char* err = wilton_service_disable_trace_info_gather();
+    if (nullptr != err) support::throw_wilton_error(err, TRACEMSG(err));
     return support::make_null_buffer();
 }
 
@@ -108,7 +120,7 @@ extern "C" char* wilton_module_init() {
 
         // enable trace info gathering if flag enabled
         auto cf = sl::json::load({const_cast<const char*> (config), config_len});
-        if (cf["traceEnabled"].as_int32()) {
+        if (cf["traceEnabled"].as_bool()) {
             wilton_service_enable_trace_info_gather();
         }
 

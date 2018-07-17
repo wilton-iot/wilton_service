@@ -24,7 +24,6 @@
 
 #include "wilton/wilton_service.h"
 
-
 #include "wilton/support/alloc.hpp"
 #include "threads_counter.hpp"
 #include "process_info.hpp"
@@ -40,6 +39,7 @@ char* wilton_service_get_pid(int* pid_out) /* noexcept */ {
         return wilton::support::alloc_copy(TRACEMSG(e.what() + "\nException raised"));
     }
 }
+
 char* wilton_service_get_process_memory_size_bytes(int* memory_out) /* noexcept */ {
     if (nullptr == memory_out) return wilton::support::alloc_copy(TRACEMSG("Null 'memory_out' parameter specified"));
     try {
@@ -60,6 +60,7 @@ char* wilton_service_get_threads_count(int* count_out) /* noexcept */ {
         return wilton::support::alloc_copy(TRACEMSG(e.what() + "\nException raised"));
     }
 }
+
 char* wilton_service_increase_threads_count() /* noexcept */ {
     try {
         wilton::service::threads_counter::increase_threads_count();
@@ -68,6 +69,7 @@ char* wilton_service_increase_threads_count() /* noexcept */ {
         return wilton::support::alloc_copy(TRACEMSG(e.what() + "\nException raised"));
     }
 }
+
 char* wilton_service_decrease_threads_count() /* noexcept */ {
     try {
         wilton::service::threads_counter::decrease_threads_count();
@@ -130,15 +132,17 @@ char *wilton_service_get_all_calls(char **out_stack, int *out_stack_len) /* noex
     }
 }
 
-char* wilton_service_is_trace_info_gather_enabled(bool* is_enabled) /* noexcept */ {
+char* wilton_service_is_trace_info_gather_enabled(int* is_enabled) /* noexcept */ {
     if (nullptr == is_enabled) return wilton::support::alloc_copy(TRACEMSG("Null 'is_enabled' parameter specified"));
     try {
-        *is_enabled = wilton::service::trace_info::is_trace_info_gather_enabled();
+        auto enabled = wilton::service::trace_info::is_trace_info_gather_enabled();
+        *is_enabled = enabled ? 1 : 0;
         return nullptr;
     } catch (const std::exception& e) {
         return wilton::support::alloc_copy(TRACEMSG(e.what() + "\nException raised"));
     }
 }
+
 char* wilton_service_enable_trace_info_gather() /* noexcept */ {
     try {
         wilton::service::trace_info::enable_trace_info_gather();
@@ -147,6 +151,7 @@ char* wilton_service_enable_trace_info_gather() /* noexcept */ {
         return wilton::support::alloc_copy(TRACEMSG(e.what() + "\nException raised"));
     }
 }
+
 char* wilton_service_disable_trace_info_gather() /* noexcept */ {
     try {
         wilton::service::trace_info::disable_trace_info_gather();

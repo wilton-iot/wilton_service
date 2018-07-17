@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef TRACE_INFO_HPP
-#define TRACE_INFO_HPP
+#ifndef WILTON_SERVICE_TRACE_INFO_HPP
+#define WILTON_SERVICE_TRACE_INFO_HPP
 
 #include <string>
 
@@ -40,16 +40,21 @@ public:
     PIMPL_CONSTRUCTOR(trace_info)
 
     static int32_t service_start_call(std::string call);
+    
     static void service_finish_call(std::string result, int32_t id);
+
     static std::string service_get_call_stack();
+
     static std::string service_get_all_calls();
+
     static bool is_trace_info_gather_enabled();
+
     static void enable_trace_info_gather();
+
     static void disable_trace_info_gather();
 };
-
 
 } // namespace
 }
 
-#endif /* TRACE_INFO_HPP */
+#endif /* WILTON_SERVICE_TRACE_INFO_HPP */

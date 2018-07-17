@@ -1,5 +1,6 @@
 /*
  * Copyright 2018, mike at myasnikov.mike@gmail.com
+ * Copyright 2018, alex at staticlibs.net
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,25 +27,27 @@ namespace service {
 
 class threads_counter::impl : public staticlib::pimpl::object::impl {
 private:
-    static std::atomic_int threads_count;
-   
+    static std::atomic<uint32_t> threads_count;
+
 public:
     static void increase_threads_count() {
         threads_count.fetch_add(1, std::memory_order_acq_rel);
     }
+
     static void decrease_threads_count() {
         threads_count.fetch_sub(1, std::memory_order_acq_rel);
     }
-    static int get_threads_count() {
-        return threads_count;
+
+    static uint32_t get_threads_count() {
+        return threads_count.load(std::memory_order_acquire);
     }
 };
 
-std::atomic_int threads_counter::impl::threads_count{0};
+std::atomic<uint32_t> threads_counter::impl::threads_count{0};
 
 PIMPL_FORWARD_METHOD_STATIC(threads_counter, void, increase_threads_count, (), (), support::exception)
 PIMPL_FORWARD_METHOD_STATIC(threads_counter, void, decrease_threads_count, (), (), support::exception)
-PIMPL_FORWARD_METHOD_STATIC(threads_counter, int,  get_threads_count, (), (), support::exception)
+PIMPL_FORWARD_METHOD_STATIC(threads_counter, uint32_t,  get_threads_count, (), (), support::exception)
 
 } // namespace
 }

@@ -33,32 +33,40 @@ extern "C" {
 
 char* wilton_service_get_pid(
         int* pid_out);
+
 char* wilton_service_get_process_memory_size_bytes(
         int* memory_out);
 
 char* wilton_service_get_threads_count(
         int* count_out);
+
 char* wilton_service_increase_threads_count();
+
 char* wilton_service_decrease_threads_count();
 
 char* wilton_service_start_call(
         const char* call,
         int call_len,
         int *id);
+
 char* wilton_service_stop_call(
         const char* result,
         int result_len,
         int id);
+
 char* wilton_service_get_call_stack(
         char **out_stack,
         int* out_stack_len);
+
 char* wilton_service_get_all_calls(
         char **out_stack,
         int* out_stack_len);
 
 char* wilton_service_is_trace_info_gather_enabled(
-        bool* is_enabled);
+        int* is_enabled);
+
 char* wilton_service_enable_trace_info_gather();
+
 char* wilton_service_disable_trace_info_gather();
 
 #ifdef __cplusplus
