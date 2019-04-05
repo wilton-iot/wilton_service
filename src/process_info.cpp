@@ -20,7 +20,7 @@
 #include "staticlib/config/os.hpp"
 
 #ifdef STATICLIB_WINDOWS
-#include <windows.h>
+#include "staticlib/support/windows.hpp"
 #include <psapi.h>
 #else // !STATICLIB_WINDOWS
 #include <sys/types.h>
